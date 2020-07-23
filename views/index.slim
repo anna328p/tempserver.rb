@@ -1,0 +1,15 @@
+html
+  head
+    title Temperature Log
+    script src="https://www.google.com/jsapi"
+    script == File.read './public/chartkick.js'
+  body
+    h1 Temperature Log
+    p This page has a graph for each sensor.
+    a href='/report.pdf' PDF Report
+    - Reading.select("distinct sensor_id").map(&:sensor_id).each do |r|
+      h2 = r
+      == line_chart Reading.where(sensor_id: r) \
+            .where('created_at >= ?', 7.days.ago) \
+            .group_by_minute(:created_at) \
+            .average(:temperature)
